@@ -1,0 +1,21 @@
+<Application
+    x:Class="QuickLauncher.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuickLauncher"
+    xmlns:conv="using:QuickLauncher.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- 全局转换器 -->
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <conv:NegationBoolToVisibilityConverter x:Key="NegationBoolToVisibilityConverter"/>
+            <conv:CategoryToIconConverter x:Key="CategoryToIconConverter"/>
+            <conv:CategoryToNameConverter x:Key="CategoryToNameConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

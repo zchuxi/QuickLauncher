@@ -1,0 +1,53 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Visual Studio
+.vs/
+*.rsuser
+*.vshost.exe*
+
+## 构建输出
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm64/
+[Aa]pp[Pp]ackages/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+
+## MSIX
+*.msix
+*.appx
+*.pfx
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+## 调试/临时
+*.tmp
+*.bak
+*.cache
+*.log
+~$*
+
+## Rider/VSCode
+.idea/
+*.swp
+
+## 系统
+Thumbs.db
+desktop.ini
+.DS_Store

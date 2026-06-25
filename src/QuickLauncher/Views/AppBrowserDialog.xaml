@@ -1,0 +1,81 @@
+<ContentDialog
+    x:Class="QuickLauncher.Views.AppBrowserDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:QuickLauncher.Models"
+    Title="应用浏览器"
+    PrimaryButtonText="选择"
+    SecondaryButtonText="收藏"
+    CloseButtonText="取消"
+    DefaultButton="Primary"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+
+    <ContentDialog.Resources>
+        <DataTemplate x:Key="AppCardTemplate" x:DataType="models:AppInfo">
+            <Border Style="{StaticResource AppCardStyle}" Width="120">
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                    <TextBlock Text="{x:Bind IconGlyph}"
+                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               FontSize="32"
+                               HorizontalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                    <TextBlock Text="{x:Bind Name}"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               FontSize="12"
+                               TextAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               MaxLines="2"/>
+                    <TextBlock Text="{x:Bind Subtitle}"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               FontSize="10"
+                               Opacity="0.6"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </ContentDialog.Resources>
+
+    <Grid Width="760" Height="520">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 搜索框 -->
+        <AutoSuggestBox Grid.Row="0"
+                        PlaceholderText="搜索所有应用..."
+                        QueryIcon="Find"
+                        Margin="0,0,0,12"
+                        Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- 分类标签 -->
+        <SelectorBar Grid.Row="1" Margin="0,0,0,12"
+                     SelectionChanged="SelectorBar_SelectionChanged">
+            <SelectorBarItem Text="全部" Tag="All"/>
+            <SelectorBarItem Text="开发" Tag="Development"/>
+            <SelectorBarItem Text="设计" Tag="Design"/>
+            <SelectorBarItem Text="效率" Tag="Productivity"/>
+            <SelectorBarItem Text="通讯" Tag="Communication"/>
+            <SelectorBarItem Text="娱乐" Tag="Entertainment"/>
+            <SelectorBarItem Text="系统" Tag="System"/>
+            <SelectorBarItem Text="其他" Tag="Other"/>
+        </SelectorBar>
+
+        <!-- 应用卡片网格 -->
+        <ScrollViewer Grid.Row="2" Padding="4">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.FilteredApps, Mode=OneWay}"
+                           ItemTemplate="{StaticResource AppCardTemplate}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="120"
+                                       MinItemHeight="140"
+                                       MinColumnSpacing="12"
+                                       MinRowSpacing="12"/>
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
+</ContentDialog>

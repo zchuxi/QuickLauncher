@@ -1,0 +1,85 @@
+<UserControl
+    x:Class="QuickLauncher.Views.MainPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:QuickLauncher.Controls"
+    xmlns:models="using:QuickLauncher.Models"
+    xmlns:vm="using:QuickLauncher.ViewModels"
+    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    x:Name="Self"
+    d:DesignHeight="680" d:DesignWidth="680">
+
+    <UserControl.Resources>
+        <!-- 外环应用图标按钮模板 -->
+        <DataTemplate x:Key="RingAppTemplate" x:DataType="models:AppInfo">
+            <Button Style="{StaticResource AppIconButtonStyle}"
+                    Command="{Binding ElementName=Self, Path=ViewModel.LaunchAppCommand}"
+                    CommandParameter="{x:Bind}"
+                    ToolTipService.ToolTip="{x:Bind Name}">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{x:Bind IconGlyph}"
+                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               FontSize="28"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{x:Bind Name}"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               MaxWidth="60"
+                               TextTrimming="CharacterEllipsis"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid x:Name="Root">
+        <!-- 主面板圆形容器 -->
+        <Border Style="{StaticResource PanelCircleBorderStyle}"
+                Width="640" Height="640"
+                CornerRadius="320">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 环形区域：外环应用 + 中心分类切换器 -->
+                <Grid Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- 外环应用图标：使用 ItemsControl + RingPanel 作为布局面板 -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.RingApps, Mode=OneWay}"
+                                  ItemTemplate="{StaticResource RingAppTemplate}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:RingPanel Radius="230"
+                                                    StartAngle="-90"
+                                                    SweepAngle="360"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <!-- 中心分类切换器：滚轮切换分类 -->
+                    <controls:CategoryRing
+                        Width="160" Height="160"
+                        Category="{x:Bind ViewModel.CurrentCategory, Mode=TwoWay}"
+                        Categories="{x:Bind ViewModel.Categories, Mode=OneWay}"/>
+                </Grid>
+
+                <!-- 底部搜索框 + 状态提示 -->
+                <StackPanel Grid.Row="1" Spacing="8" Margin="0,0,0,16">
+                    <AutoSuggestBox PlaceholderText="搜索应用..."
+                                    QueryIcon="Find"
+                                    Width="360"
+                                    HorizontalAlignment="Center"
+                                    Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <InfoBar IsOpen="{x:Bind ViewModel.IsStatusVisible, Mode=TwoWay}"
+                             Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                             Severity="Success"
+                             IsClosable="True"
+                             Width="360"
+                             HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

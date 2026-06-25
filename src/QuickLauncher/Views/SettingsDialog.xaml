@@ -1,0 +1,164 @@
+<ContentDialog
+    x:Class="QuickLauncher.Views.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:QuickLauncher.Models"
+    Title="设置"
+    CloseButtonText="关闭"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+
+    <Grid Width="640" Height="520">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部导航条 -->
+        <NavigationView Grid.Row="0"
+                        PaneDisplayMode="Top"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        SelectionChanged="Nav_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="外观" Tag="外观">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE771;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="快捷键" Tag="快捷键">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE765;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="鼠标手势" Tag="鼠标手势">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE7F4;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="高级" Tag="高级">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE713;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="关于" Tag="关于">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE946;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+        </NavigationView>
+
+        <!-- 右侧内容 -->
+        <ScrollViewer Grid.Row="1" Padding="0,8,0,0">
+            <StackPanel Spacing="12">
+
+                <!-- 外观 -->
+                <StackPanel Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsAppearance, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="主题" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <SelectorBar SelectionChanged="ThemeSelector_SelectionChanged">
+                                <SelectorBarItem Text="浅色" Tag="Light"/>
+                                <SelectorBarItem Text="深色" Tag="Dark"/>
+                                <SelectorBarItem Text="跟随系统" Tag="System"/>
+                            </SelectorBar>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="面板透明度" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <Slider Minimum="0.5" Maximum="1.0" StepFrequency="0.05"
+                                    Value="{x:Bind ViewModel.Settings.PanelOpacity, Mode=TwoWay}"
+                                    SnapsTo="StepValues"/>
+                            <TextBlock Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}">
+                                <Run Text="{x:Bind ViewModel.Settings.PanelOpacity, Mode=OneWay}"/>
+                                <Run Text=" (0.5 - 1.0)"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <ToggleSwitch Header="启用动画效果"
+                                      IsOn="{x:Bind ViewModel.Settings.AnimationsEnabled, Mode=TwoWay}"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- 快捷键 -->
+                <StackPanel Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsHotkey, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="呼出面板快捷键" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border Style="{StaticResource HotkeyBadgeStyle}">
+                                    <TextBlock Text="{x:Bind ViewModel.Settings.TriggerHotkey, Mode=OneWay}"
+                                               FontFamily="Cascadia Code, Consolas" Foreground="White"/>
+                                </Border>
+                                <Button Content="更改" Style="{StaticResource DefaultButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- 鼠标手势 -->
+                <StackPanel Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsMouseGesture, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.Settings.EdgeGestures, Mode=OneWay}">
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="models:EdgeGestureSetting">
+                                <Border Style="{StaticResource SettingCardStyle}" Margin="0,0,0,8">
+                                    <StackPanel Spacing="8">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <ToggleSwitch IsOn="{x:Bind Enabled, Mode=TwoWay}"/>
+                                            <TextBlock Text="{x:Bind EdgeDisplayName}" VerticalAlignment="Center"
+                                                       Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <TextBlock Text="阈值:" VerticalAlignment="Center" Opacity="0.7"/>
+                                            <Slider Minimum="4" Maximum="40" Width="120"
+                                                    Value="{x:Bind Threshold, Mode=TwoWay}"/>
+                                            <TextBlock Text="{x:Bind Threshold, Mode=OneWay}" VerticalAlignment="Center" Opacity="0.6"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </StackPanel>
+
+                <!-- 高级 -->
+                <StackPanel Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsAdvanced, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <ToggleSwitch Header="开机启动"
+                                      IsOn="{x:Bind ViewModel.Settings.StartWithWindows, Mode=TwoWay}"/>
+                    </Border>
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <ToggleSwitch Header="最小化到系统托盘"
+                                      IsOn="{x:Bind ViewModel.Settings.MinimizeToTray, Mode=TwoWay}"/>
+                    </Border>
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <ToggleSwitch Header="在任务栏显示"
+                                      IsOn="{x:Bind ViewModel.Settings.ShowInTaskbar, Mode=TwoWay}"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- 关于 -->
+                <StackPanel Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsAbout, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Border Style="{StaticResource SettingCardStyle}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="鼠标极速启动器" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="{x:Bind ViewModel.Settings.AppVersion, Mode=OneWay}" Opacity="0.6"/>
+                            <TextBlock Text="一款 Windows 平台的高效应用快速启动和切换工具" Opacity="0.7" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</ContentDialog>

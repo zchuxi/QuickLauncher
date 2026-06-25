@@ -1,0 +1,89 @@
+<Window
+    x:Class="QuickLauncher.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuickLauncher.Views"
+    Title="鼠标极速启动器 - 原型"
+    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+
+    <Grid>
+        <Grid.Background>
+            <MicaBackdrop Kind="BaseAlt"/>
+        </Grid.Background>
+
+        <Grid Padding="32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 标题 -->
+            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,24">
+                <TextBlock Text="鼠标极速启动器" Style="{StaticResource TitleTextBlockStyle}" FontSize="28"/>
+                <TextBlock Text="WinUI 3 环形启动器 · 页面原型" Opacity="0.7" Style="{StaticResource BodyTextBlockStyle}"/>
+            </StackPanel>
+
+            <!-- 导航按钮 -->
+            <StackPanel Grid.Row="1" Spacing="8" MaxWidth="420" HorizontalAlignment="Left">
+                <Button Style="{StaticResource NavButtonStyle}" Click="ShowMainPanel_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE943;" FontSize="20"/>
+                        <StackPanel>
+                            <TextBlock Text="主面板（环形）" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="环形应用启动器 · 中心分类切换" Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource NavButtonStyle}" Click="ShowAppBrowser_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE719;" FontSize="20"/>
+                        <StackPanel>
+                            <TextBlock Text="应用浏览器" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="搜索/分类/网格浏览全部应用" Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource NavButtonStyle}" Click="ShowHotkeySettings_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE765;" FontSize="20"/>
+                        <StackPanel>
+                            <TextBlock Text="快捷键映射" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="自定义快捷键与应用绑定" Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource NavButtonStyle}" Click="ShowSettings_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Glyph="&#xE713;" FontSize="20"/>
+                        <StackPanel>
+                            <TextBlock Text="设置" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="外观/快捷键/鼠标手势/高级" Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- 提示信息 -->
+            <Border Grid.Row="2" VerticalAlignment="Bottom"
+                    Style="{StaticResource SettingCardStyle}"
+                    MaxWidth="420" HorizontalAlignment="Left">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="原型说明" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                    <TextBlock Opacity="0.7" TextWrapping="Wrap" Style="{StaticResource CaptionTextBlockStyle}">
+                        <Run Text="· 所有页面使用 Mock 数据预览，暂未接入系统功能"/>
+                        <LineBreak/>
+                        <Run Text="· 主面板：鼠标滚轮在中心圆环切换分类，点击外环图标模拟启动"/>
+                        <LineBreak/>
+                        <Run Text="· 后续阶段将接入全局快捷键、鼠标钩子、应用扫描等服务"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
