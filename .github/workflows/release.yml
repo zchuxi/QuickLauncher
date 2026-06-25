@@ -63,6 +63,8 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "=== Publishing with MSBuild ==="
+          $publishDir = Join-Path $env:GITHUB_WORKSPACE "publish"
+          Write-Host "PublishDir: $publishDir"
           msbuild src\QuickLauncher\QuickLauncher.csproj `
             -t:Publish `
             -p:Configuration=Release `
@@ -72,7 +74,7 @@ jobs:
             -p:RuntimeIdentifier=win-x64 `
             -p:SelfContained=true `
             -p:EnableMsixTooling=false `
-            -p:PublishDir=publish `
+            "-p:PublishDir=$publishDir\" `
             -v:normal 2>&1 | Tee-Object -FilePath publish.log
           Write-Host "Publish exit code: $LASTEXITCODE"
           if ($LASTEXITCODE -ne 0) { exit 1 }

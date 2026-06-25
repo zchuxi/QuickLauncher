@@ -43,6 +43,10 @@ packages/
 *.log
 ~$*
 
+## CI 诊断日志（本地下载）
+build-logs-*/
+*.binlog
+
 ## Rider/VSCode
 .idea/
 *.swp
