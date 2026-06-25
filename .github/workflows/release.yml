@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Windows App SDK workload
+        shell: pwsh
+        run: |
+          dotnet workload install windowsdesktop
+
+      - name: Restore
+        shell: pwsh
+        run: dotnet restore src/QuickLauncher/QuickLauncher.csproj
+
+      - name: Publish (self-contained, win-x64)
+        shell: pwsh
+        run: |
+          dotnet publish src/QuickLauncher/QuickLauncher.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:WindowsPackageType=None `
+            -p:Platform=x64 `
+            -o publish
+
+      - name: Zip artifact
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ([string]::IsNullOrEmpty($tag)) { $tag = "v1.0.0" }
+          Compress-Archive -Path publish\* -DestinationPath "QuickLauncher-$tag-win-x64.zip"
+
+      - name: Create Release and Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: QuickLauncher ${{ github.ref_name }}
+          body: |
+            # QuickLauncher ${{ github.ref_name }}
+
+            鼠标极速启动器 - WinUI 3 环形应用启动器。
+
+            ## 下载与运行
+
+            1. 下载 `QuickLauncher-*-win-x64.zip`
+            2. 解压到任意目录
+            3. 运行 `QuickLauncher.exe`（无需安装，自包含运行）
+
+            ## 系统要求
+
+            - Windows 10 1809 (17763) 及以上，x64
+            - 无需额外安装 .NET 运行时（已自包含）
+
+            ## 功能
+
+            - 环形启动面板（Alt+Space 呼出）
+            - 鼠标滚轮切换分类
+            - 鼠标边缘手势
+            - 系统托盘常驻
+          files: QuickLauncher-*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
