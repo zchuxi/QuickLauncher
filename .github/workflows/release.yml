@@ -33,6 +33,20 @@ jobs:
             -p:WindowsPackageType=None `
             -v normal 2>&1 | Tee-Object -FilePath build.log
 
+      - name: Check Windows Event Log for XAML compiler crash
+        if: always()
+        shell: pwsh
+        run: |
+          Write-Host "=== Application Error Events (last 10 min) ==="
+          Get-WinEvent -FilterHashtable @{LogName='Application'; Level=2; StartTime=(Get-Date).AddMinutes(-10)} -ErrorAction SilentlyContinue |
+            Where-Object { $_.Message -match 'XamlCompiler|\.NET Runtime|Application Error' } |
+            Select-Object TimeCreated, Id, ProviderName, Message |
+            Format-List
+          Write-Host "=== .NET Runtime Events ==="
+          Get-WinEvent -FilterHashtable @{LogName='Application'; ProviderName='.NET Runtime'; StartTime=(Get-Date).AddMinutes(-10)} -ErrorAction SilentlyContinue |
+            Select-Object TimeCreated, Id, Message |
+            Format-List
+
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
