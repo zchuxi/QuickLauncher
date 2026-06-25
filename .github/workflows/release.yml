@@ -14,69 +14,82 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
+      - name: NuGet Restore (dotnet)
         shell: pwsh
-        run: dotnet restore src/QuickLauncher/QuickLauncher.csproj
+        run: |
+          dotnet restore src\QuickLauncher\QuickLauncher.csproj --runtime win-x64
+          Write-Host "Restore exit code: $LASTEXITCODE"
 
-      - name: Build (diagnostic)
+      - name: Build with MSBuild (diagnostic)
         id: build
-        continue-on-error: true
         shell: pwsh
         run: |
-          dotnet build src/QuickLauncher/QuickLauncher.csproj `
-            -c Release -p:Platform=x64 `
+          Write-Host "=== Building with MSBuild (detailed) ==="
+          msbuild src\QuickLauncher\QuickLauncher.csproj `
+            -p:Configuration=Release `
+            -p:Platform=x64 `
             -p:WindowsPackageType=None `
-            -v normal 2>&1 | Tee-Object -FilePath build.log
+            -p:WindowsAppSDKSelfContained=true `
+            -p:RuntimeIdentifier=win-x64 `
+            -p:SelfContained=true `
+            -p:EnableMsixTooling=false `
+            -bl:build.binlog `
+            -v:detailed 2>&1 | Tee-Object -FilePath build.log
+          Write-Host "MSBuild exit code: $LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      - name: Check Windows Event Log for XAML compiler crash
-        if: always()
-        shell: pwsh
-        run: |
-          Write-Host "=== Application Error Events (last 10 min) ==="
-          Get-WinEvent -FilterHashtable @{LogName='Application'; Level=2; StartTime=(Get-Date).AddMinutes(-10)} -ErrorAction SilentlyContinue |
-            Where-Object { $_.Message -match 'XamlCompiler|\.NET Runtime|Application Error' } |
-            Select-Object TimeCreated, Id, ProviderName, Message |
-            Format-List
-          Write-Host "=== .NET Runtime Events ==="
-          Get-WinEvent -FilterHashtable @{LogName='Application'; ProviderName='.NET Runtime'; StartTime=(Get-Date).AddMinutes(-10)} -ErrorAction SilentlyContinue |
-            Select-Object TimeCreated, Id, Message |
-            Format-List
-
-      - name: Upload build log
+      - name: Upload build log and binlog
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: build.log
-          if-no-files-found: warn
-
-      - name: Upload XAML compiler input.json
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: xaml-input
+          name: build-logs
           path: |
+            build.log
+            build.binlog
             src/QuickLauncher/obj/**/input.json
             src/QuickLauncher/obj/**/output.json
           if-no-files-found: warn
 
-      - name: Fail if build failed
-        if: steps.build.outcome != 'success'
-        run: exit 1
-
-      - name: Publish (self-contained, win-x64)
+      - name: Publish with MSBuild (self-contained, win-x64)
         id: publish
         shell: pwsh
         run: |
-          dotnet publish src/QuickLauncher/QuickLauncher.csproj `
-            -c Release -r win-x64 --self-contained true `
-            -p:WindowsPackageType=None -p:Platform=x64 `
-            -v normal -o publish
+          Write-Host "=== Publishing with MSBuild ==="
+          msbuild src\QuickLauncher\QuickLauncher.csproj `
+            -t:Publish `
+            -p:Configuration=Release `
+            -p:Platform=x64 `
+            -p:WindowsPackageType=None `
+            -p:WindowsAppSDKSelfContained=true `
+            -p:RuntimeIdentifier=win-x64 `
+            -p:SelfContained=true `
+            -p:EnableMsixTooling=false `
+            -p:PublishDir=publish `
+            -v:normal 2>&1 | Tee-Object -FilePath publish.log
+          Write-Host "Publish exit code: $LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: List publish output
+        shell: pwsh
+        run: |
+          Write-Host "=== Publish output contents ==="
+          Get-ChildItem publish -Recurse | Select-Object FullName, Length | Format-Table -AutoSize
+          $exePath = "publish\QuickLauncher.exe"
+          if (Test-Path $exePath) {
+            Write-Host "Found: $exePath"
+          } else {
+            Write-Host "ERROR: $exePath not found!"
+            Get-ChildItem publish -Filter "*.exe" | ForEach-Object { Write-Host "  EXE: $($_.Name)" }
+            exit 1
+          }
 
       - name: Zip artifact
         shell: pwsh
@@ -84,6 +97,15 @@ jobs:
           $tag = "${{ github.ref_name }}"
           if ([string]::IsNullOrEmpty($tag)) { $tag = "v1.0.0" }
           Compress-Archive -Path publish\* -DestinationPath "QuickLauncher-$tag-win-x64.zip"
+          Write-Host "Created: QuickLauncher-$tag-win-x64.zip"
+          Get-Item "QuickLauncher-$tag-win-x64.zip" | Select-Object Name, Length
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickLauncher-zip
+          path: QuickLauncher-*.zip
+          if-no-files-found: error
 
       - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
