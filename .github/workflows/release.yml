@@ -33,6 +33,8 @@ jobs:
             -p:WindowsPackageType=None `
             -p:Platform=x64 `
             -p:PublishReadyToRun=true `
+            -p:XamlCompilerEnableDiagnostics=true `
+            -v minimal `
             -o publish
 
       - name: Zip artifact

@@ -97,7 +97,7 @@
                         <TextBlock Text="按下要绑定的按键组合" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.8"/>
                         <TextBox x:Name="KeyRecorderBox"
                                  PlaceholderText="在此处按下按键..."
-                                 Text="{x:Bind ViewModel.NewKeyDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Text="{x:Bind ViewModel.NewKeyDisplay, Mode=TwoWay}"
                                  IsReadOnly="True"
                                  KeyDown="KeyRecorderBox_KeyDown"/>
                         <TextBlock Text="选择动作" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.8" Margin="0,4,0,0"/>

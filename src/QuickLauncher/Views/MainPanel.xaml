@@ -71,7 +71,7 @@
                                     QueryIcon="Find"
                                     Width="360"
                                     HorizontalAlignment="Center"
-                                    Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    Text="{x:Bind ViewModel.SearchQuery, Mode=TwoWay}"/>
                     <InfoBar IsOpen="{x:Bind ViewModel.IsStatusVisible, Mode=TwoWay}"
                              Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                              Severity="Success"
