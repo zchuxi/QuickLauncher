@@ -65,4 +65,22 @@ public sealed partial class HotkeySettingsDialog : ContentDialog
             ViewModel.DeleteHotkeyCommand.Execute(config);
         }
     }
+
+    /// <summary>动作选择变更：手动同步到 ViewModel（避免 x:Bind TwoWay 到 enum 的编译器崩溃）。</summary>
+    private void ActionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && cb.SelectedItem is HotkeyAction action)
+        {
+            ViewModel.NewAction = action;
+        }
+    }
+
+    /// <summary>应用选择变更：手动同步到 ViewModel（避免 x:Bind TwoWay 到 nullable 引用类型的编译器崩溃）。</summary>
+    private void AppComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && cb.SelectedItem is AppInfo app)
+        {
+            ViewModel.SelectedApp = app;
+        }
+    }
 }
