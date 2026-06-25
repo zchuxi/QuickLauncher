@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 namespace QuickLauncher.Views;
 
@@ -11,5 +12,6 @@ public sealed partial class MainPanelWindow : Window
     {
         this.InitializeComponent();
         this.Title = "环形启动器";
+        this.SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
     }
 }

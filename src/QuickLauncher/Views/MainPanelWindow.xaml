@@ -7,10 +7,6 @@
     Width="720" Height="720">
 
     <Grid>
-        <Grid.Background>
-            <MicaBackdrop Kind="BaseAlt"/>
-        </Grid.Background>
-
         <views:MainPanel x:Name="Panel"/>
     </Grid>
 </Window>
