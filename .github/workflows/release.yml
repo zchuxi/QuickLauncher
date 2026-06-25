@@ -24,6 +24,8 @@ jobs:
         run: dotnet restore src/QuickLauncher/QuickLauncher.csproj
 
       - name: Publish (self-contained, win-x64)
+        id: publish
+        continue-on-error: true
         shell: pwsh
         run: |
           dotnet publish src/QuickLauncher/QuickLauncher.csproj `
@@ -35,7 +37,41 @@ jobs:
             -v normal `
             -o publish
 
+      - name: Dump XAML compiler diagnostics
+        if: always()
+        shell: pwsh
+        run: |
+          Write-Host "=== Searching for XAML compiler output files ==="
+          $base = "src\QuickLauncher\obj\x64\Release\net8.0-windows10.0.19041.0\win-x64"
+          $outputFile = Join-Path $base "output.json"
+          if (Test-Path $outputFile) {
+            Write-Host "=== output.json ==="
+            Get-Content $outputFile -Raw
+          } else {
+            Write-Host "output.json not found at $outputFile"
+          }
+          Write-Host "=== All .json files in XAML obj dir ==="
+          Get-ChildItem -Path $base -Filter "*.json" -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "--- $($_.Name) ---"
+            Get-Content $_.FullName -Raw
+          }
+          Write-Host "=== XAML log files ==="
+          Get-ChildItem -Path "src\QuickLauncher\obj" -Recurse -Filter "*.log" -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "--- $($_.FullName) ---"
+            Get-Content $_.FullName -Raw
+          }
+          Write-Host "=== Input.json (XAML compiler input) ==="
+          $inputFile = Join-Path $base "input.json"
+          if (Test-Path $inputFile) {
+            Get-Content $inputFile -Raw
+          }
+
+      - name: Fail if publish failed
+        if: steps.publish.outcome != 'success'
+        run: exit 1
+
       - name: Zip artifact
+        if: steps.publish.outcome == 'success'
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
@@ -43,6 +79,7 @@ jobs:
           Compress-Archive -Path publish\* -DestinationPath "QuickLauncher-$tag-win-x64.zip"
 
       - name: Create Release and Upload
+        if: steps.publish.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}

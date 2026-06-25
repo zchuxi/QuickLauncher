@@ -43,7 +43,7 @@ public sealed class EdgeGestureSetting
 
     public bool Enabled { get; set; }
 
-    public int Threshold { get; set; } = 10;
+    public double Threshold { get; set; } = 10;
 
     public GestureAction Action { get; set; }
 
