@@ -19,11 +19,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Install Windows App SDK workload
-        shell: pwsh
-        run: |
-          dotnet workload install windowsdesktop
-
       - name: Restore
         shell: pwsh
         run: dotnet restore src/QuickLauncher/QuickLauncher.csproj
@@ -37,6 +32,7 @@ jobs:
             --self-contained true `
             -p:WindowsPackageType=None `
             -p:Platform=x64 `
+            -p:PublishReadyToRun=true `
             -o publish
 
       - name: Zip artifact
