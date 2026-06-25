@@ -50,20 +50,35 @@ jobs:
           } else {
             Write-Host "output.json not found at $outputFile"
           }
-          Write-Host "=== All .json files in XAML obj dir ==="
-          Get-ChildItem -Path $base -Filter "*.json" -ErrorAction SilentlyContinue | ForEach-Object {
-            Write-Host "--- $($_.Name) ---"
-            Get-Content $_.FullName -Raw
-          }
-          Write-Host "=== XAML log files ==="
-          Get-ChildItem -Path "src\QuickLauncher\obj" -Recurse -Filter "*.log" -ErrorAction SilentlyContinue | ForEach-Object {
-            Write-Host "--- $($_.FullName) ---"
-            Get-Content $_.FullName -Raw
-          }
-          Write-Host "=== Input.json (XAML compiler input) ==="
+
+          Write-Host "=== input.json content ==="
           $inputFile = Join-Path $base "input.json"
           if (Test-Path $inputFile) {
-            Get-Content $inputFile -Raw
+            $content = Get-Content $inputFile -Raw
+            Write-Host $content
+          } else {
+            Write-Host "input.json not found"
+          }
+
+          Write-Host "=== Running XAML compiler directly to capture output ==="
+          $xamlCompiler = Resolve-Path "C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk\1.5.240627000\tools\net472\XamlCompiler.exe" -ErrorAction SilentlyContinue
+          if ($xamlCompiler -and (Test-Path $inputFile)) {
+            $output2 = Join-Path $base "output2.json"
+            $p = Start-Process -FilePath $xamlCompiler.Path -ArgumentList "`"$inputFile`" `"$output2`"" -NoNewWindow -Wait -PassThru -RedirectStandardOutput "xaml_stdout.txt" -RedirectStandardError "xaml_stderr.txt"
+            Write-Host "XAML compiler exit code: $($p.ExitCode)"
+            Write-Host "=== stdout ==="
+            if (Test-Path "xaml_stdout.txt") { Get-Content "xaml_stdout.txt" -Raw }
+            Write-Host "=== stderr ==="
+            if (Test-Path "xaml_stderr.txt") { Get-Content "xaml_stderr.txt" -Raw }
+            Write-Host "=== output2.json ==="
+            if (Test-Path $output2) { Get-Content $output2 -Raw }
+          } else {
+            Write-Host "XAML compiler or input.json not found"
+          }
+
+          Write-Host "=== All files in XAML obj dir ==="
+          Get-ChildItem -Path $base -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "$($_.Name) ($($_.Length) bytes)"
           }
 
       - name: Fail if publish failed
