@@ -23,6 +23,12 @@ public sealed class AppInfo
 
     public bool IsFavorite { get; set; }
 
+    /// <summary>可执行文件路径（扫描注册表获得，可能为空）。</summary>
+    public string ExecutablePath { get; init; } = string.Empty;
+
+    /// <summary>启动参数。</summary>
+    public string[] Args { get; init; } = Array.Empty<string>();
+
     /// <summary>显示用副标题。</summary>
     [JsonIgnore]
     public string Subtitle => $"{Category.GetDisplayName()} · {LaunchCount} 次";

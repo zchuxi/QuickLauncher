@@ -28,7 +28,7 @@ public sealed class TrayService : ITrayService
     public void Show()
     {
         Initialize();
-        _icon?.ForceUpdate();
+        // H.NotifyIcon 在创建 TaskbarIcon 后即显示，无需 ForceUpdate
     }
 
     public void Hide()

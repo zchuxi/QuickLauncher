@@ -7,6 +7,9 @@ namespace QuickLauncher.Services;
 /// </summary>
 public interface IHotkeyService
 {
+    /// <summary>在 UI 线程初始化消息窗口。</summary>
+    void EnsureInitialized();
+
     /// <summary>注册一个快捷键。返回是否成功。</summary>
     bool Register(HotkeyConfig config);
 

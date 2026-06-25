@@ -15,7 +15,7 @@ public sealed partial class MainWindow : Window
     {
         this.InitializeComponent();
         this.Title = "鼠标极速启动器 - 原型";
-        this.SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
+        this.SystemBackdrop = new MicaBackdrop();
     }
 
     /// <summary>显示主面板（独立窗口）。</summary>
