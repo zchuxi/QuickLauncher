@@ -46,9 +46,10 @@ public sealed class HotkeyService : IHotkeyService, IDisposable
         }
 
         var (mods, vk) = HotkeyParser.Parse(config.DisplayKey);
+        // vk 为 0 时（如纯修饰键）注册无意义，直接返回失败
         if (vk == 0 && config.Action != Models.HotkeyAction.HidePanel)
         {
-            // Space 的 vk 非零，OK
+            return false;
         }
 
         var atom = System.Threading.Interlocked.Increment(ref _counter);
