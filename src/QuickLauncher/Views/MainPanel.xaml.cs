@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using QuickLauncher.Models;
 using QuickLauncher.ViewModels;
 
 namespace QuickLauncher.Views;
@@ -21,5 +22,14 @@ public sealed partial class MainPanel : UserControl
     {
         this.InitializeComponent();
         ViewModel = viewModel;
+    }
+
+    /// <summary>外环应用图标点击：启动应用。</summary>
+    private void RingApp_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is AppInfo app)
+        {
+            ViewModel.LaunchAppCommand.Execute(app);
+        }
     }
 }

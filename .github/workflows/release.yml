@@ -32,9 +32,7 @@ jobs:
             --self-contained true `
             -p:WindowsPackageType=None `
             -p:Platform=x64 `
-            -p:PublishReadyToRun=true `
-            -p:XamlCompilerEnableDiagnostics=true `
-            -v minimal `
+            -v normal `
             -o publish
 
       - name: Zip artifact

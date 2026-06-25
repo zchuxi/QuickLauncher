@@ -1,5 +1,7 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using QuickLauncher.Models;
 using QuickLauncher.ViewModels;
 using Windows.System;
 
@@ -54,4 +56,13 @@ public sealed partial class HotkeySettingsDialog : ContentDialog
         VirtualKey.Tab => "Tab",
         _ => key.ToString(),
     };
+
+    /// <summary>删除快捷键：通过 DataContext 携带的 HotkeyConfig 调用 ViewModel 命令。</summary>
+    private void DeleteHotkey_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is HotkeyConfig config)
+        {
+            ViewModel.DeleteHotkeyCommand.Execute(config);
+        }
+    }
 }

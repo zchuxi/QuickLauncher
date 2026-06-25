@@ -15,8 +15,7 @@
         <!-- 外环应用图标按钮模板 -->
         <DataTemplate x:Key="RingAppTemplate" x:DataType="models:AppInfo">
             <Button Style="{StaticResource AppIconButtonStyle}"
-                    Command="{Binding ElementName=Self, Path=ViewModel.LaunchAppCommand}"
-                    CommandParameter="{x:Bind}"
+                    Click="RingApp_Click"
                     ToolTipService.ToolTip="{x:Bind Name}">
                 <StackPanel Spacing="2">
                     <TextBlock Text="{x:Bind IconGlyph}"
